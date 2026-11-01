@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Bangladesh — Connect People, Share Life</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ==========================================================================
+           CONNECT BANGLADESH — COMPLETE DESIGN SYSTEM & STYLESHEET
+           ========================================================================== */
+        :root {
+            --primary: #0066FF;
+            --primary-hover: #0052CC;
+            --primary-light: #EFF6FF;
+            --navy: #0F172A;
+            --slate: #64748B;
+            --bg-light: #F8FAFC;
+            --surface-light: #FFFFFF;
+            --border-light: #E2E8F0;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --transition: all 0.2s ease-in-out;
+            --font-stack: 'Inter', 'Noto Sans Bengali', system-ui, -apple-system, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --primary: #3B82F6;
+            --primary-hover: #60A5FA;
+            --primary-light: rgba(59, 130, 246, 0.15);
+            --navy: #F8FAFC;
+            --slate: #94A3B8;
+            --bg-light: #0B0F17;
+            --surface-light: #131B2E;
+            --border-light: #1E293B;
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-stack);
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        input, button, textarea, select {
+            font: inherit;
+            color: inherit;
+        }
+
+        /* Utility Classes */
+        .d-none { display: none !important; }
+        .d-flex { display: flex !important; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-1 { gap: 0.5rem; }
+        .gap-2 { gap: 1rem; }
+        .w-100 { width: 100%; }
+
+        /* Buttons & Inputs */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.938rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: #FFFFFF;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-light);
+            color: var(--text-main);
+        }
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .btn-ghost {
+            background-color: transparent;
+            color: var(--text-muted);
+        }
+        .btn-ghost:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            background-color: var(--surface-light);
+            color: var(--text-main);
+            outline: none;
+            transition: var(--transition);
+        }
+        .input-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        /* Auth Gate Overlay */
+        #auth-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .auth-card {
+            background: var(--surface-light);
+            width: 100%;
+            max-width: 440px;
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+        }
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .cbd-logo-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px; height: 56px;
+            background: var(--primary);
+            color: #FFF;
+            font-size: 1.5rem;
+            font-weight: 800;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 0.75rem;
+            letter-spacing: -1px;
+        }
+        .brand-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .brand-header p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* App Shell Layout */
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        /* Top Navigation Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--surface-light);
+            border-bottom: 1px solid var(--border-light);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+        .header-left, .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        .logo-sm {
+            width: 38px; height: 38px;
+            background: var(--primary);
+            color: #FFF;
+            font-weight: 800;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .search-bar {
+            position: relative;
+            width: 320px;
+        }
+        .search-bar input {
+            padding-left: 2.5rem;
+            border-radius: 20px;
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-light);
+            font-size: 0.875rem;
+        }
+        .search-bar i {
+            position: absolute;
+            left: 1rem; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .header-icon-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+        .header-icon-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        .badge-count {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: var(--danger);
+            color: #FFF;
+            font-size: 0.688rem;
+            font-weight: 700;
+            padding: 0.125rem 0.375rem;
+            border-radius: 10px;
+            border: 2px solid var(--surface-light);
+        }
+
+        /* Main Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 260px 1fr 300px;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            padding: 1.5rem;
+            gap: 1.5rem;
+        }
+
+        /* Left Sidebar */
+        .sidebar-left {
+            position: sticky;
+            top: calc(64px + 1.5rem);
+            height: calc(100vh - 64px - 3rem);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.938rem;
+            transition: var(--transition);
+        }
+        .nav-link i {
+            font-size: 1.125rem;
+            width: 24px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        .nav-link:hover i, .nav-link.active i {
+            color: var(--primary);
+        }
+
+        /* Center Main Content Area */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 680px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Story Reel */
+        .stories-container {
+            display: flex;
+            gap: 0.75rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scrollbar-width: none;
+        }
+        .stories-container::-webkit-scrollbar { display: none; }
+        .story-card {
+            min-width: 110px;
+            height: 180px;
+            border-radius: var(--radius);
+            background: var(--surface-light);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0.75rem;
+        }
+        .story-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .story-card.create-story {
+            background: var(--primary-light);
+            border: 2px dashed var(--primary);
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        /* Post Composer */
+        .composer-card {
+            background: var(--surface-light);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .composer-top {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .composer-input {
+            flex: 1;
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.938rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .composer-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-light);
+            padding-top: 0.75rem;
+        }
+        .composer-action {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+        .composer-action:hover { background: var(--bg-light); color: var(--text-main); }
+
+        /* Feed Posts */
+        .post-card {
+            background: var(--surface-light);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .post-author-info h4 { font-size: 0.938rem; font-weight: 600; color: var(--text-main); }
+        .post-author-info span { font-size: 0.75rem; color: var(--text-muted); }
+        .post-body { font-size: 0.938rem; line-height: 1.5; margin-bottom: 1rem; color: var(--text-main); }
+        .post-media {
+            width: 100%;
+            max-height: 450px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.813rem;
+            color: var(--text-muted);
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 0.5rem;
+        }
+        .post-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        .post-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .post-action-btn:hover, .post-action-btn.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* Right Sidebar */
+        .sidebar-right {
+            position: sticky;
+            top: calc(64px + 1.5rem);
+            height: calc(100vh - 64px - 3rem);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .widget-card {
+            background: var(--surface-light);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .widget-title {
+            font-size: 0.938rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+        .contact-item:hover { background: var(--bg-light); padding-left: 0.25rem; }
+        .contact-status {
+            width: 10px; height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 2px solid var(--surface-light);
+            position: absolute;
+            bottom: 0; right: 0;
+        }
+
+        /* Messenger Full Screen / Overlay Module */
+        .messenger-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: calc(100vh - 64px - 3rem);
+            background: var(--surface-light);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .chat-sidebar {
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-light);
+        }
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+        .chat-item:hover, .chat-item.active { background: var(--surface-light); }
+        .chat-window {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--surface-light);
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .message-bubble {
+            max-width: 65%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.938rem;
+            line-height: 1.4;
+        }
+        .message-bubble.incoming {
+            background: var(--bg-light);
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .message-bubble.outgoing {
+            background: var(--primary);
+            color: #FFFFFF;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-composer-area {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Settings Suite Layout */
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 1.5rem;
+            background: var(--surface-light);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            min-height: calc(100vh - 64px - 3rem);
+            box-shadow: var(--shadow-sm);
+        }
+        .settings-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border-right: 1px solid var(--border-light);
+            padding-right: 1.5rem;
+        }
+        .settings-content {
+            padding-left: 0.5rem;
+        }
+        .settings-section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+        }
+        .setting-group {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Media Queries */
+        @media(max-width: 1024px) {
+            .workspace { grid-template-columns: 1fr; }
+            .sidebar-left, .sidebar-right { display: none; }
+            .settings-layout { grid-template-columns: 1fr; }
+            .settings-menu { border-right: none; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem; padding-right: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUTHENTICATION GATE / LOGIN MODAL -->
+    <div id="auth-modal" class="d-flex">
+        <div class="auth-card">
+            <div class="brand-header">
+                <div class="cbd-logo-box">CBD</div>
+                <h1 data-i18n="auth_title">Connect Bangladesh</h1>
+                <p data-i18n="auth_subtitle">Connect People, Share Life.</p>
+            </div>
+            <div id="auth-error" class="d-none" style="background: rgba(239,68,68,0.1); color: var(--danger); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.875rem; margin-bottom: 1rem;"></div>
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                <div id="register-fields" class="d-none" style="margin-bottom: 1rem;">
+                    <label style="display:block; font-size:0.875rem; font-weight:600; margin-bottom:0.375rem;" data-i18n="full_name">Full Name</label>
+                    <input type="text" id="auth-name" class="input-control" placeholder="Salman Farshi">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display:block; font-size:0.875rem; font-weight:600; margin-bottom:0.375rem;" data-i18n="email_label">Email Address</label>
+                    <input type="email" id="auth-email" class="input-control" required placeholder="name@example.com">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display:block; font-size:0.875rem; font-weight:600; margin-bottom:0.375rem;" data-i18n="password_label">Password</label>
+                    <input type="password" id="auth-password" class="input-control" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary w-100" id="auth-submit-btn" style="margin-bottom: 1rem;" data-i18n="login_btn">Sign In</button>
+                <div style="text-align: center; font-size: 0.875rem;">
+                    <span id="auth-switch-text" data-i18n="no_account">Don't have an account?</span>
+                    <a href="#" id="auth-switch-link" onclick="toggleAuthMode(event)" style="color: var(--primary); font-weight: 600; text-decoration: none; margin-left: 0.25rem;" data-i18n="register_link">Create Account</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app-container" class="d-none">
+        <!-- HEADER -->
+        <header>
+            <div class="header-left">
+                <a href="#" class="logo-group" onclick="navigate('home')">
+                    <div class="logo-sm">CBD</div>
+                    <span class="brand-title">Connect Bangladesh</span>
+                </a>
+                <div class="search-bar d-none d-flex">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="input-control" placeholder="Search Connect Bangladesh..." data-i18n-placeholder="search_placeholder">
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-icon-btn" onclick="navigate('messenger')" title="Messenger">
+                    <i class="fa-brands fa-facebook-messenger"></i>
+                    <span class="badge-count">2</span>
+                </button>
+                <button class="header-icon-btn" onclick="navigate('notifications')" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge-count">5</span>
+                </button>
+                <div style="position: relative;">
+                    <div class="avatar" id="header-avatar" onclick="toggleProfileDropdown()" style="width: 40px; height: 40px; cursor: pointer;">SF</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- WORKSPACE GRID -->
+        <div class="workspace">
+            <!-- LEFT SIDEBAR -->
+            <aside class="sidebar-left">
+                <a href="#" class="nav-link active" data-target="home" onclick="navigate('home')">
+                    <i class="fa-solid fa-house"></i>
+                    <span data-i18n="nav_home">Home</span>
+                </a>
+                <a href="#" class="nav-link" data-target="friends" onclick="navigate('friends')">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span data-i18n="nav_friends">Friends</span>
+                </a>
+                <a href="#" class="nav-link" data-target="messenger" onclick="navigate('messenger')">
+                    <i class="fa-brands fa-facebook-messenger"></i>
+                    <span data-i18n="nav_messenger">Messenger</span>
+                </a>
+                <a href="#" class="nav-link" data-target="videos" onclick="navigate('videos')">
+                    <i class="fa-solid fa-video"></i>
+                    <span data-i18n="nav_videos">Videos</span>
+                </a>
+                <a href="#" class="nav-link" data-target="profile" onclick="navigate('profile')">
+                    <i class="fa-solid fa-user"></i>
+                    <span data-i18n="nav_profile">Profile</span>
+                </a>
+                <a href="#" class="nav-link" data-target="notifications" onclick="navigate('notifications')">
+                    <i class="fa-solid fa-bell"></i>
+                    <span data-i18n="nav_notifications">Notifications</span>
+                </a>
+                <a href="#" class="nav-link" data-target="settings" onclick="navigate('settings')">
+                    <i class="fa-solid fa-gear"></i>
+                    <span data-i18n="nav_settings">Settings</span>
+                </a>
+            </aside>
+
+            <!-- DYNAMIC CONTENT AREA -->
+            <main id="content-area" class="main-content">
+                <!-- Injected via Router -->
+            </main>
+
+            <!-- RIGHT SIDEBAR -->
+            <aside class="sidebar-right">
+                <div class="widget-card">
+                    <div class="widget-title">
+                        <span data-i18n="suggested_friends">Suggested Friends</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div class="avatar" style="width: 36px; height: 36px; font-size: 0.8rem;">AN</div>
+                                <div>
+                                    <h5 style="font-size: 0.875rem; font-weight: 600;">Aminul Noor</h5>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);">3 mutual friends</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;" data-i18n="add_friend">Add</button>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div class="avatar" style="width: 36px; height: 36px; font-size: 0.8rem;">TR</div>
+                                <div>
+                                    <h5 style="font-size: 0.875rem; font-weight: 600;">Tanvir Rahman</h5>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);"> Dhaka, Bangladesh</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;" data-i18n="add_friend">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-title">
+                        <span data-i18n="online_contacts">Online Contacts</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div class="contact-item">
+                            <div style="position: relative;">
+                                <div class="avatar" style="width: 36px; height: 36px; font-size: 0.8rem;">NH</div>
+                                <div class="contact-status"></div>
+                            </div>
+                            <span style="font-size: 0.875rem; font-weight: 500;">Nusrat Hossain</span>
+                        </div>
+                        <div class="contact-item">
+                            <div style="position: relative;">
+                                <div class="avatar" style="width: 36px; height: 36px; font-size: 0.8rem;">RK</div>
+                                <div class="contact-status"></div>
+                            </div>
+                            <span style="font-size: 0.875rem; font-weight: 500;">Rafiqul Karim</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION CORE -->
+    <script>
+        /* ==========================================================================
+           1. CONFIGURATION & STATE MANAGEMENT
+           ========================================================================== */
+        // NOTE: Replace with your actual Supabase project credentials when configuring backend.
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_ANON_KEY = 'your-anon-key';
+        
+        // Initialize Supabase Client (safe fallback if credentials are placeholders)
+        let supabaseClient = null;
+        try {
+            if (SUPABASE_URL.includes('supabase.co')) {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e) {
+            console.warn("Supabase initialization deferred. Running in standalone demo mode.");
+        }
+
+        const AppState = {
+            currentUser: {
+                id: 'demo-user-1630',
+                name: 'Salman Farshi',
+                username: 'salmanfarshi1630',
+                email: 'salman@example.com',
+                avatar_url: null
+            },
+            currentRoute: 'home',
+            isRegistering: false,
+            language: localStorage.getItem('cbd_lang') || 'en',
+            theme: localStorage.getItem('cbd_theme') || 'light'
+        };
+
+        /* ==========================================================================
+           2. LOCALIZATION (DICTIONARY)
+           ========================================================================== */
+        const i18n = {
+            en: {
+                auth_title: "Connect Bangladesh",
+                auth_subtitle: "Connect People, Share Life.",
+                full_name: "Full Name",
+                email_label: "Email Address",
+                password_label: "Password",
+                login_btn: "Sign In",
+                register_btn: "Create Account",
+                no_account: "Don't have an account?",
+                have_account: "Already have an account?",
+                register_link: "Create Account",
+                login_link: "Sign In",
+                nav_home: "Home",
+                nav_friends: "Friends",
+                nav_messenger: "Messenger",
+                nav_videos: "Videos",
+                nav_profile: "Profile",
+                nav_notifications: "Notifications",
+                nav_settings: "Settings",
+                search_placeholder: "Search Connect Bangladesh...",
+                suggested_friends: "Suggested Friends",
+                online_contacts: "Online Contacts",
+                add_friend: "Add",
+                post_placeholder: "What's on your mind, Salman?",
+                photo_video: "Photo/Video",
+                feeling_activity: "Feeling/Activity",
+                publish: "Publish",
+                like: "Like",
+                comment: "Comment",
+                share: "Share",
+                settings_title: "Platform Settings",
+                lang_label: "Display Language",
+                theme_label: "Appearance Theme",
+                light_mode: "Light Mode",
+                dark_mode: "Dark Mode",
+                system_mode: "System Default",
+                save_changes: "Save Preferences",
+                logout: "Sign Out"
+            },
+            bn: {
+                auth_title: "কানেক্ট বাংলাদেশ",
+                auth_subtitle: "মানুষকে সংযুক্ত করুন, জীবন ভাগ করুন।",
+                full_name: "পূর্ণ নাম",
+                email_label: "ইমেইল ঠিকানা",
+                password_label: "পাসওয়ার্ড",
+                login_btn: "প্রবেশ করুন",
+                register_btn: "অ্যাকাউন্ট তৈরি করুন",
+                no_account: "কোন অ্যাকাউন্ট নেই?",
+                have_account: "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+                register_link: "নিবন্ধন করুন",
+                login_link: "প্রবেশ করুন",
+                nav_home: "হোম",
+                nav_friends: "বন্ধুরা",
+                nav_messenger: "মেসেঞ্জার",
+                nav_videos: "ভিডিও",
+                nav_profile: "প্রোফাইল",
+                nav_notifications: "বিজ্ঞপ্তি",
+                nav_settings: "সেটিংস",
+                search_placeholder: "কানেক্ট বাংলাদেশে খুঁজুন...",
+                suggested_friends: "পরামর্শকৃত বন্ধুরা",
+                online_contacts: "অনলাইন পরিচিতি",
+                add_friend: "যুক্ত করুন",
+                post_placeholder: "আপনার মনে কি চলছে, সালমান?",
+                photo_video: "ছবি/ভিডিও",
+                feeling_activity: "অনুভূতি/কার্যকলাপ",
+                publish: "প্রকাশ করুন",
+                like: "পছন্দ",
+                comment: "মন্তব্য",
+                share: "শেয়ার",
+                settings_title: "প্ল্যাটফর্ম সেটিংস",
+                lang_label: "প্রদর্শনী ভাষা",
+                theme_label: "থিম উপস্থিতি",
+                light_mode: "লাইট মোড",
+                dark_mode: "ডার্ক মোড",
+                system_mode: "সিস্টেম ডিফল্ট",
+                save_changes: "পছন্দসমূহ সংরক্ষণ করুন",
+                logout: "লগআউট"
+            }
+        };
+
+        function t(key) {
+            return i18n[AppState.language][key] || i18n['en'][key] || key;
+        }
+
+        function applyLocalization() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const k = el.getAttribute('data-i18n');
+                if (i18n[AppState.language][k]) {
+                    el.innerText = i18n[AppState.language][k];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const k = el.getAttribute('data-i18n-placeholder');
+                if (i18n[AppState.language][k]) {
+                    el.placeholder = i18n[AppState.language][k];
+                }
+            });
+        }
+
+        /* ==========================================================================
+           3. THEME MANAGEMENT
+           ========================================================================== */
+        function setTheme(themeName) {
+            AppState.theme = themeName;
+            localStorage.setItem('cbd_theme', themeName);
+            if (themeName === 'system') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', themeName);
+            }
+        }
+        setTheme(AppState.theme);
+
+        /* ==========================================================================
+           4. AUTHENTICATION CONTROLLER
+           ========================================================================== */
+        function toggleAuthMode(e) {
+            e.preventDefault();
+            AppState.isRegistering = !AppState.isRegistering;
+            const regFields = document.getElementById('register-fields');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const switchText = document.getElementById('auth-switch-text');
+            const switchLink = document.getElementById('auth-switch-link');
+
+            if (AppState.isRegistering) {
+                regFields.classList.remove('d-none');
+                submitBtn.innerText = t('register_btn');
+                switchText.innerText = t('have_account');
+                switchLink.innerText = t('login_link');
+            } else {
+                regFields.classList.add('d-none');
+                submitBtn.innerText = t('login_btn');
+                switchText.innerText = t('no_account');
+                switchLink.innerText = t('register_link');
+            }
+        }
+
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-name').value;
+            const errBox = document.getElementById('auth-error');
+            errBox.classList.add('d-none');
+
+            if (supabaseClient) {
+                try {
+                    if (AppState.isRegistering) {
+                        const { data, error } = await supabaseClient.auth.signUp({
+                            email, password, options: { data: { full_name: name } }
+                        });
+                        if (error) throw error;
+                    } else {
+                        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                        if (error) throw error;
+                    }
+                } catch (err) {
+                    errBox.innerText = err.message;
+                    errBox.classList.remove('d-none');
+                    return;
+                }
+            }
+
+            // Fallback for demo session initialization
+            if (AppState.isRegistering && name) {
+                AppState.currentUser.name = name;
+            }
+            AppState.currentUser.email = email;
+
+            // Success: Dismiss auth modal and launch app shell
+            document.getElementById('auth-modal').classList.add('d-none');
+            document.getElementById('app-container').classList.remove('d-none');
+            navigate('home');
+        }
+
+        /* ==========================================================================
+           5. ROUTER & VIEW RENDERING ENGINE
+           ========================================================================== */
+        function navigate(route) {
+            AppState.currentRoute = route;
+            document.querySelectorAll('.sidebar-left .nav-link').forEach(link => {
+                if (link.getAttribute('data-target') === route) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = '';
+
+            switch(route) {
+                case 'home':
+                    renderHomeView(contentArea);
+                    break;
+                case 'friends':
+                    renderFriendsView(contentArea);
+                    break;
+                case 'messenger':
+                    renderMessengerView(contentArea);
+                    break;
+                case 'videos':
+                    renderVideosView(contentArea);
+                    break;
+                case 'profile':
+                    renderProfileView(contentArea);
+                    break;
+                case 'notifications':
+                    renderNotificationsView(contentArea);
+                    break;
+                case 'settings':
+                    renderSettingsView(contentArea);
+                    break;
+                default:
+                    renderHomeView(contentArea);
+            }
+            window.scrollTo(0, 0);
+        }
+
+        /* --- View: Home Feed --- */
+        function renderHomeView(container) {
+            container.innerHTML = `
+                <!-- Stories Reel -->
+                <div class="stories-container">
+                    <div class="story-card create-story">
+                        <i class="fa-solid fa-plus" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                        <span style="font-size: 0.75rem; font-weight: 600;">Create Story</span>
+                    </div>
+                    <div class="story-card" style="background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=300') center/cover;">
+                        <span style="color: #FFF; font-weight: 600; font-size: 0.813rem;">Nusrat H.</span>
+                    </div>
+                    <div class="story-card" style="background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300') center/cover;">
+                        <span style="color: #FFF; font-weight: 600; font-size: 0.813rem;">Aminul N.</span>
+                    </div>
+                </div>
+
+                <!-- Post Composer -->
+                <div class="composer-card">
+                    <div class="composer-top">
+                        <div class="avatar">SF</div>
+                        <div class="composer-input" onclick="openPostModal()" data-i18n="post_placeholder">What's on your mind, Salman?</div>
+                    </div>
+                    <div class="composer-footer">
+                        <div class="composer-action"><i class="fa-solid fa-photo-film" style="color: #10B981;"></i> <span data-i18n="photo_video">Photo/Video</span></div>
+                        <div class="composer-action"><i class="fa-solid fa-face-smile" style="color: #F59E0B;"></i> <span data-i18n="feeling_activity">Feeling/Activity</span></div>
+                        <button class="btn btn-primary" style="padding: 0.375rem 1rem;" data-i18n="publish">Publish</button>
+                    </div>
+                </div>
+
+                <!-- Post Item 1 -->
+                <div class="post-card">
+                    <div class="post-header">
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <div class="avatar" style="width: 40px; height: 40px; font-size: 0.9rem;">SF</div>
+                            <div class="post-author-info">
+                                <h4>Salman Farshi <span style="font-weight: 400; color: var(--text-muted); font-size: 0.8rem;">(Development Demo)</span></h4>
+                                <span>2 hours ago • <i class="fa-solid fa-earth-americas"></i></span>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost" style="padding: 0.25rem 0.5rem;"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="post-body">
+                        Welcome to Connect Bangladesh (Connect Bd)! We are building the ultimate professional social networking platform with complete dual Bangla/English language support, dark mode, real-time messaging, and robust Supabase architecture. 🚀🇧🇩
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" class="post-media" alt="Coding workspace">
+                    <div class="post-stats">
+                        <span><i class="fa-solid fa-thumbs-up" style="color: var(--primary);"></i> 48 Likes</span>
+                        <span>12 Comments • 4 Shares</span>
+                    </div>
+                    <div class="post-actions">
+                        <button class="post-action-btn"><i class="fa-regular fa-thumbs-up"></i> <span data-i18n="like">Like</span></button>
+                        <button class="post-action-btn"><i class="fa-regular fa-comment"></i> <span data-i18n="comment">Comment</span></button>
+                        <button class="post-action-btn"><i class="fa-solid fa-share"></i> <span data-i18n="share">Share</span></button>
+                    </div>
+                </div>
+            `;
+            applyLocalization();
+        }
+
+        /* --- View: Friends Manager --- */
+        function renderFriendsView(container) {
+            container.innerHTML = `
+                <div style="background: var(--surface-light); border: 1px solid var(--border-light); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Friend Requests</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light);">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div class="avatar" style="width: 48px; height: 48px;">AR</div>
+                                <div>
+                                    <h4 style="font-weight: 600;">Asif Rahman</h4>
+                                    <span style="font-size: 0.813rem; color: var(--text-muted);">5 mutual friends</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-primary" style="padding: 0.375rem 1rem;">Confirm</button>
+                                <button class="btn btn-outline" style="padding: 0.375rem 1rem;">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* --- View: Messenger Suite --- */
+        function renderMessengerView(container) {
+            container.innerHTML = `
+                <div class="messenger-layout">
+                    <div class="chat-sidebar">
+                        <div style="padding: 1rem; border-bottom: 1px solid var(--border-light);">
+                            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.75rem;">Messenger</h3>
+                            <input type="text" class="input-control" placeholder="Search chats..." style="font-size: 0.875rem;">
+                        </div>
+                        <div class="chat-list">
+                            <div class="chat-item active">
+                                <div style="position: relative;">
+                                    <div class="avatar">NH</div>
+                                    <div class="contact-status"></div>
+                                </div>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                        <h5 style="font-size: 0.938rem; font-weight: 600;">Nusrat Hossain</h5>
+                                        <span style="font-size: 0.75rem; color: var(--text-muted);">10:42 AM</span>
+                                    </div>
+                                    <p style="font-size: 0.813rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Sounds great! Let's review the Supabase schema.</p>
+                                </div>
+                            </div>
+                            <div class="chat-item">
+                                <div style="position: relative;">
+                                    <div class="avatar">AN</div>
+                                </div>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                        <h5 style="font-size: 0.938rem; font-weight: 600;">Aminul Noor</h5>
+                                        <span style="font-size: 0.75rem; color: var(--text-muted);">Yesterday</span>
+                                    </div>
+                                    <p style="font-size: 0.813rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">I uploaded the video module code.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-window">
+                        <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; gap: 0.75rem;">
+                            <div class="avatar" style="width: 36px; height: 36px; font-size: 0.8rem;">NH</div>
+                            <div>
+                                <h4 style="font-size: 0.938rem; font-weight: 600;">Nusrat Hossain</h4>
+                                <span style="font-size: 0.75rem; color: var(--success);">Online</span>
+                            </div>
+                        </div>
+                        <div class="chat-messages">
+                            <div class="message-bubble incoming">Hello Salman! How is the Connect Bangladesh frontend coming along?</div>
+                            <div class="message-bubble outgoing">Going exceptionally well! Fully responsive single-file architecture with Bangla & English localization.</div>
+                            <div class="message-bubble incoming">Sounds great! Let's review the Supabase schema.</div>
+                        </div>
+                        <div class="chat-composer-area">
+                            <button class="btn btn-ghost" style="padding: 0.5rem;"><i class="fa-solid fa-paperclip"></i></button>
+                            <input type="text" class="input-control" placeholder="Type a message..." style="flex: 1;">
+                            <button class="btn btn-primary" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* --- View: Videos Section --- */
+        function renderVideosView(container) {
+            container.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div style="background: var(--surface-light); border: 1px solid var(--border-light); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Video Feed & Discovery</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+                            <div style="border: 1px solid var(--border-light); border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-light);">
+                                <div style="height: 160px; background: #000; position: relative; display: flex; align-items: center; justify-content: center; color: #FFF;">
+                                    <i class="fa-solid fa-play" style="font-size: 2rem;"></i>
+                                </div>
+                                <div style="padding: 0.75rem;">
+                                    <h4 style="font-size: 0.938rem; font-weight: 600; margin-bottom: 0.25rem;">Connect Bangladesh Platform Overview</h4>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);">Salman Farshi • 1.2K views</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* --- View: User Profile --- */
+        function renderProfileView(container) {
+            container.innerHTML = `
+                <div style="background: var(--surface-light); border: 1px solid var(--border-light); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm);">
+                    <div style="height: 200px; background: linear-gradient(135deg, var(--primary), #1E293B);"></div>
+                    <div style="padding: 0 2rem 2rem 2rem; position: relative;">
+                        <div class="avatar" style="width: 100px; height: 100px; font-size: 2.5rem; border: 4px solid var(--surface-light); margin-top: -50px; margin-bottom: 1rem; background: var(--primary); color: #FFF;">SF</div>
+                        <h2 style="font-size: 1.5rem; font-weight: 700;">Salman Farshi</h2>
+                        <p style="color: var(--text-muted); font-size: 0.938rem; margin-bottom: 1rem;">@salmanfarshi1630 • Connect Bangladesh Creator & Lead Developer</p>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-primary">Edit Profile</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* --- View: Notifications --- */
+        function renderNotificationsView(container) {
+            container.innerHTML = `
+                <div style="background: var(--surface-light); border: 1px solid var(--border-light); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Notifications</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border-radius: var(--radius-sm); background: var(--primary-light);">
+                            <div class="avatar" style="width: 40px; height: 40px;"><i class="fa-solid fa-thumbs-up" style="color: var(--primary);"></i></div>
+                            <div style="flex: 1;">
+                                <p style="font-size: 0.938rem;"><strong>Nusrat Hossain</strong> and 47 others liked your post.</p>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">2 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* --- View: Settings Suite --- */
+        function renderSettingsView(container) {
+            container.innerHTML = `
+                <div class="settings-layout">
+                    <div class="settings-menu">
+                        <a href="#" class="nav-link active"><i class="fa-solid fa-globe"></i> Language & Theme</a>
+                        <a href="#" class="nav-link"><i class="fa-solid fa-user-shield"></i> Account & Privacy</a>
+                        <a href="#" class="nav-link"><i class="fa-solid fa-bell"></i> Notifications</a>
+                        <a href="#" class="nav-link"><i class="fa-solid fa-circle-info"></i> About Connect BD</a>
+                    </div>
+                    <div class="settings-content">
+                        <h3 class="settings-section-title" data-i18n="settings_title">Platform Settings</h3>
+                        
+                        <div class="setting-group">
+                            <label data-i18n="lang_label">Display Language</label>
+                            <select id="lang-select" class="input-control" onchange="changeLanguage(this.value)">
+                                <option value="en" ${AppState.language === 'en' ? 'selected' : ''}>English</option>
+                                <option value="bn" ${AppState.language === 'bn' ? 'selected' : ''}>বাংলা (Bangla)</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-group">
+                            <label data-i18n="theme_label">Appearance Theme</label>
+                            <select id="theme-select" class="input-control" onchange="changeThemeSetting(this.value)">
+                                <option value="light" ${AppState.theme === 'light' ? 'selected' : ''} data-i18n="light_mode">Light Mode</option>
+                                <option value="dark" ${AppState.theme === 'dark' ? 'selected' : ''} data-i18n="dark_mode">Dark Mode</option>
+                                <option value="system" ${AppState.theme === 'system' ? 'selected' : ''} data-i18n="system_mode">System Default</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="alert('Preferences saved successfully!')" data-i18n="save_changes">Save Preferences</button>
+                    </div>
+                </div>
+            `;
+            applyLocalization();
+        }
+
+        function changeLanguage(lang) {
+            AppState.language = lang;
+            localStorage.setItem('cbd_lang', lang);
+            applyLocalization();
+            navigate(AppState.currentRoute);
+        }
+
+        function changeThemeSetting(theme) {
+            setTheme(theme);
+        }
+
+        function toggleProfileDropdown() {
+            navigate('profile');
+        }
+
+        // Initialize application bootstrap
+        applyLocalization();
+    </script>
+</body>
+</html>
